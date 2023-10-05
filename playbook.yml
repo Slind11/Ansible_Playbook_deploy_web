@@ -1,0 +1,27 @@
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Copy docker-compose.yml
+      copy:
+        src: ./docker-compose.yml
+        dest: /home/slind/ansibleproject/docker-compose.yml
+
+    - name: Copy Dockerfiles
+      copy:
+        src: "Dockerfiles/{{ item }}"
+        dest: /home/slind/ansibleproject/Dockerfile
+      with_items:
+        - Dockerfile.mysql
+        - Dockerfile.nginx
+        - Dockerfile.php
+
+    - name: Copy Nginx Config
+      copy:
+        src: Nginx/nginx.conf
+        dest: /home/slind/ansibleproject/nginx.conf
+
+    - name: Restart Nginx
+      command: docker-compose -f /home/slind/ansibleproject/docker-compose.yml restart nginx
+      ignore_errors: yes
+
